@@ -11,6 +11,15 @@ if (typeof RDVI == 'undefined')
 
 $(function() {
 
+    function rand() {
+        return Math.random()*5+1.5;
+    }
+
+    var time = new Date();
+
+
+
+
     var arrayLength = 80
     var newArray = []
 
@@ -20,7 +29,8 @@ $(function() {
     }
 
     Plotly.plot('chart1', [{
-        y: newArray,
+        x: [time],
+        y: [rand],
         mode: 'markers',
         line: {color: '#f44'},
         type: 'scatter'
@@ -28,61 +38,74 @@ $(function() {
         plot_bgcolor: '#444444',
         paper_bgcolor: '#333333',
         autosize: true,
-		//width: 480,
-		//height: 300,
+        //width: 480,
+        //height: 300,
         margin: {
-        	l: 20,
-        	r: 20,
-        	t: 20,
-        	b: 20,
-        	pad: 0,
+            l: 20,
+            r: 20,
+            t: 20,
+            b: 20,
+            pad: 0,
         },
         shapes: [
             {
                 'type': 'rect',
-                'xref': 'x',
+                'xref': 'paper',
                 'yref': 'y',
                 'x0': 0,
-                'y0': 4,
-                'x1': 80,
-                'y1': 8,
+                'y0': 2,
+                'x1': 1,
+                'y1': 6,
                 'line': {
-					'width': 0,
+                    'width': 0,
                 },
                 'fillcolor': 'rgba(50, 230, 96, 0.3)',
             },
         ],
         font: {
-        	color: '#dddddd'
+            color: '#dddddd'
         },
         yaxis: {
-			'fixedrange': true
-		},
-		xaxis: {
-			range: [0, 80],
-			fixedrange: true
-		}
+            range: [0,8],
+            'fixedrange': true
+        },
+        xaxis: {
+            range: [0, 80],
+            fixedrange: true
+        }
     },{
-    	staticPlot: true,
-    	displayModeBar: false,
-    	doubleClick: false,
-    	showAxisDragHandles: false,
+        staticPlot: true,
+        displayModeBar: false,
+        doubleClick: false,
+        showAxisDragHandles: false,
     });
+
 
     var cnt = 0;
 
     var interval = setInterval(function() {
-      
-      var y = Math.round(Math.random()*10) + 1
-      newArray = newArray.concat(y)
-      newArray.splice(0, 1)
-      
-      var data_update = {
-        y: [newArray]
-      };
-      
-      Plotly.update('chart1', data_update)
-      
-      if(cnt === 100) clearInterval(interval);
+
+        var time = new Date();
+
+        var update = {
+        x:  [[time]],
+        y: [[rand()]]
+        }
+
+        var olderTime = time.setMinutes(time.getMinutes() - 1);
+        var futureTime = time.setMinutes(time.getMinutes() + 1);
+
+        var minuteView = {
+            xaxis: {
+                fixedrange: true,
+                type: 'date',
+                range: [olderTime,futureTime]
+            }
+        };
+
+        Plotly.relayout('chart1', minuteView);
+        Plotly.extendTraces('chart1', update, [0])
+
+        if(cnt === 100) clearInterval(interval);
     }, 100);
 });
