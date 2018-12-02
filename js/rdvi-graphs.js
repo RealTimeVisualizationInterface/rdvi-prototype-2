@@ -18,16 +18,6 @@ $(function() {
     var time = new Date();
 
 
-
-
-    var arrayLength = 80
-    var newArray = []
-
-    for(var i = 0; i < arrayLength; i++) {
-      var y = Math.round(Math.random()*10) + 1
-      newArray[i] = y
-    }
-
     Plotly.plot('chart1', [{
         x: [time],
         y: [rand],
@@ -44,7 +34,7 @@ $(function() {
             l: 20,
             r: 20,
             t: 20,
-            b: 20,
+            b: 25,
             pad: 0,
         },
         shapes: [
@@ -66,12 +56,9 @@ $(function() {
             color: '#dddddd'
         },
         yaxis: {
+            gridcolor: '#222',
             range: [0,8],
             'fixedrange': true
-        },
-        xaxis: {
-            range: [0, 80],
-            fixedrange: true
         }
     },{
         staticPlot: true,
@@ -88,8 +75,8 @@ $(function() {
         var time = new Date();
 
         var update = {
-        x:  [[time]],
-        y: [[rand()]]
+        x:  [[time,time,time,time,time]],
+        y: [[rand(),rand(),rand(),rand(),rand()]]
         }
 
         var olderTime = time.setMinutes(time.getMinutes() - 1);
@@ -97,6 +84,11 @@ $(function() {
 
         var minuteView = {
             xaxis: {
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 5000,
+                tickcolor: '#222',
+                gridcolor: '#222',
                 fixedrange: true,
                 type: 'date',
                 range: [olderTime,futureTime]
@@ -107,5 +99,5 @@ $(function() {
         Plotly.extendTraces('chart1', update, [0])
 
         if(cnt === 100) clearInterval(interval);
-    }, 100);
+    }, 1000);
 });
