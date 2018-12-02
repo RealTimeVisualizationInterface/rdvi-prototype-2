@@ -22,10 +22,22 @@ $(function() {
     Plotly.plot('chart1', [{
         y: newArray,
         mode: 'markers',
-        line: {color: '#80CAF6'},
+        line: {color: '#f44'},
         type: 'scatter'
     }],{
-        'shapes': [
+        plot_bgcolor: '#444444',
+        paper_bgcolor: '#333333',
+        autosize: true,
+		//width: 480,
+		//height: 300,
+        margin: {
+        	l: 20,
+        	r: 20,
+        	t: 20,
+        	b: 20,
+        	pad: 0,
+        },
+        shapes: [
             {
                 'type': 'rect',
                 'xref': 'x',
@@ -35,12 +47,26 @@ $(function() {
                 'x1': 80,
                 'y1': 8,
                 'line': {
-                    'color': 'rgb(50, 171, 96)',
-                    'width': 3,
+					'width': 0,
                 },
-                'fillcolor': 'rgba(50, 171, 96, 0.6)',
+                'fillcolor': 'rgba(50, 230, 96, 0.3)',
             },
-        ]
+        ],
+        font: {
+        	color: '#dddddd'
+        },
+        yaxis: {
+			'fixedrange': true
+		},
+		xaxis: {
+			range: [0, 80],
+			fixedrange: true
+		}
+    },{
+    	staticPlot: true,
+    	displayModeBar: false,
+    	doubleClick: false,
+    	showAxisDragHandles: false,
     });
 
     var cnt = 0;
