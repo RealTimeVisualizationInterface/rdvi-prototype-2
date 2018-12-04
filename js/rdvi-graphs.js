@@ -2,14 +2,16 @@ if (typeof RDVI == 'undefined')
     RDVI = {};
 
 (function(){
+    
+var rangeInMils = 300000;
 
-    this.render = function( options ) {
-    }
-}).call(RDVI);
+this.render = function( options ) {
+}
+// this.updateRange = function( range ) {
+//     rangeInMils = range
+// }
 
-
-
-$(function() {
+this.init = function(){
 
     function rand() {
         return Math.random()*5+1.5;
@@ -61,14 +63,13 @@ $(function() {
             'fixedrange': true
         }
     },{
-        staticPlot: true,
+        staticPlot: false,
         displayModeBar: false,
         doubleClick: false,
         showAxisDragHandles: false,
     });
 
 
-    var cnt = 0;
 
     var interval = setInterval(function() {
 
@@ -78,15 +79,14 @@ $(function() {
         x:  [[time,time,time,time,time]],
         y: [[rand(),rand(),rand(),rand(),rand()]]
         }
-
-        var olderTime = time.getTime()-60000;
+        var olderTime = time.getTime()-(rangeInMils);
         var futureTime = time.getTime();
 
         var minuteView = {
             xaxis: {
                 tickmode: 'linear',
                 tick0: 0,
-                dtick: 5000,
+                dtick: 60000,
                 tickcolor: '#222',
                 gridcolor: '#222',
                 fixedrange: true,
@@ -98,6 +98,12 @@ $(function() {
         Plotly.relayout('chart1', minuteView);
         Plotly.extendTraces('chart1', update, [0])
 
-        if(cnt === 100) clearInterval(interval);
     }, 1000);
+}
+
+
+}).call(RDVI);
+
+$(function() {//on doc load
+    RDVI.init();
 });
