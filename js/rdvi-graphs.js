@@ -1,26 +1,14 @@
 if (typeof RDVI == 'undefined')
     RDVI = {};
 
-(function(){
 
-    this.render = function( options ) {
-    }
-}).call(RDVI);
+function RDVI.Chart(selector, options){
+	this.selector = selector;
+	this.options = options;
 
-
-
-$(function() {
-
-    function rand() {
-        return Math.random()*5+1.5;
-    }
-
-    var time = new Date();
-
-
-    Plotly.plot('chart1', [{
-        x: [time],
-        y: [rand],
+    Plotly.plot(selector, [{
+        x: [],
+        y: [],
         mode: 'markers',
         line: {color: '#f44'},
         type: 'scatter'
@@ -66,17 +54,41 @@ $(function() {
         doubleClick: false,
         showAxisDragHandles: false,
     });
+}
+
+RDVI.Chart.prototype.addSamples = function(samples){
+	
+}
 
 
-    var cnt = 0;
+
+$(function() {
+
+	var options = {
+        name: "data1",
+        range: 60, // sec
+        limit: [-4,4],
+        refresh_rate: 1,
+    }
+
+	var chart1 = new RDVI.Chart('chart1', options);
+
+
+    function rand() {
+        return Math.random()*5+1.5;
+    }
+
+    var time = new Date();
+
+
 
     var interval = setInterval(function() {
 
         var time = new Date();
 
         var update = {
-        x:  [[time,time,time,time,time]],
-        y: [[rand(),rand(),rand(),rand(),rand()]]
+        	x:  [[time,time,time,time,time]],
+        	y: [[rand(),rand(),rand(),rand(),rand()]]
         }
 
         var olderTime = time.getTime()-60000;
@@ -97,7 +109,5 @@ $(function() {
 
         Plotly.relayout('chart1', minuteView);
         Plotly.extendTraces('chart1', update, [0])
-
-        if(cnt === 100) clearInterval(interval);
     }, 1000);
 });
