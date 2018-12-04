@@ -52,19 +52,20 @@ RDVI.Chart = function Chart(selector, options){
             gridcolor: '#222',
             range: this.options.range,
             'fixedrange': true
-        }
+        },
+        hovermode : "closest",
     },{
-        staticPlot: true,
+        staticPlot: false,
         displayModeBar: false,
-        doubleClick: false,
+        doubleClick: true,
         showAxisDragHandles: false,
+        displaylogo: false,
     });
 }
 
 RDVI.Chart.prototype.addSample = function(time, val){
     if(this.last_time<time)
         this.last_time = time
-
     this.new_vals.x[0].push(time);
     this.new_vals.y[0].push(val);
 }
