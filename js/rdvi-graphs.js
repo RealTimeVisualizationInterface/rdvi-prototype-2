@@ -79,8 +79,8 @@ $(function() {
         y: [[rand(),rand(),rand(),rand(),rand()]]
         }
 
-        var olderTime = time.setMinutes(time.getMinutes() - 1);
-        var futureTime = time.setMinutes(time.getMinutes() + 1);
+        var olderTime = time.getTime()-60000;
+        var futureTime = time.getTime();
 
         var minuteView = {
             xaxis: {
