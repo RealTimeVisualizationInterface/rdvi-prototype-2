@@ -2,9 +2,14 @@ if (typeof RDVI == 'undefined')
     RDVI = {};
 
 
-function RDVI.Chart(selector, options){
-	this.selector = selector;
-	this.options = options;
+RDVI.Chart = function Chart(selector, options){
+    this.selector = selector;
+    this.options = options;
+    this.last_time = new Date();
+    this.new_vals = {
+        'x':[[]],
+        'y':[[]],
+    };
 
     Plotly.plot(selector, [{
         x: [],
@@ -31,9 +36,9 @@ function RDVI.Chart(selector, options){
                 'xref': 'paper',
                 'yref': 'y',
                 'x0': 0,
-                'y0': 2,
+                'y0': this.options.limit[0],
                 'x1': 1,
-                'y1': 6,
+                'y1': this.options.limit[1],
                 'line': {
                     'width': 0,
                 },
@@ -45,7 +50,7 @@ function RDVI.Chart(selector, options){
         },
         yaxis: {
             gridcolor: '#222',
-            range: [0,8],
+            range: this.options.range,
             'fixedrange': true
         }
     },{
@@ -56,58 +61,61 @@ function RDVI.Chart(selector, options){
     });
 }
 
-RDVI.Chart.prototype.addSamples = function(samples){
-	
+RDVI.Chart.prototype.addSample = function(time, val){
+    if(this.last_time<time)
+        this.last_time = time
+
+    this.new_vals.x[0].push(time);
+    this.new_vals.y[0].push(val);
 }
 
+RDVI.Chart.prototype.update = function(){
+    var time = new Date();
+    var pastTime = this.last_time.getTime()-this.options.domain*1000;
+    var nowTime = this.last_time.getTime();
+
+    var minuteView = {
+        xaxis: {
+            tickmode: 'linear',
+            tick0: 0,
+            dtick: 5000,
+            tickcolor: '#222',
+            gridcolor: '#222',
+            fixedrange: true,
+            type: 'date',
+            range: [pastTime,nowTime]
+        }
+    };
+
+    Plotly.relayout('chart1', minuteView);
+    Plotly.extendTraces('chart1', this.new_vals, [0])
+
+    this.new_vals = {'x':[[]],'y':[[]],};
+}
 
 
 $(function() {
 
-	var options = {
+    var options = {
         name: "data1",
-        range: 60, // sec
+        domain: 60, // sec
         limit: [-4,4],
+        range: [-6,6],
         refresh_rate: 1,
     }
 
-	var chart1 = new RDVI.Chart('chart1', options);
+    var chart1 = new RDVI.Chart('chart1', options);
 
 
     function rand() {
         return Math.random()*5+1.5;
     }
 
-    var time = new Date();
-
-
 
     var interval = setInterval(function() {
-
-        var time = new Date();
-
-        var update = {
-        	x:  [[time,time,time,time,time]],
-        	y: [[rand(),rand(),rand(),rand(),rand()]]
-        }
-
-        var olderTime = time.getTime()-60000;
-        var futureTime = time.getTime();
-
-        var minuteView = {
-            xaxis: {
-                tickmode: 'linear',
-                tick0: 0,
-                dtick: 5000,
-                tickcolor: '#222',
-                gridcolor: '#222',
-                fixedrange: true,
-                type: 'date',
-                range: [olderTime,futureTime]
-            }
-        };
-
-        Plotly.relayout('chart1', minuteView);
-        Plotly.extendTraces('chart1', update, [0])
-    }, 1000);
+        chart1.addSample(new Date(), rand());
+        chart1.addSample(new Date(), rand());
+        chart1.addSample(new Date(), rand());
+        chart1.update();
+    }, options.refresh_rate*1000);
 });
