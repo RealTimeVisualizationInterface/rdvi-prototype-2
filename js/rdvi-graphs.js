@@ -61,12 +61,14 @@ this.init = function(){
             gridcolor: '#222',
             range: [0,8],
             'fixedrange': true
-        }
+        },
+        hovermode : "closest",
     },{
         staticPlot: false,
         displayModeBar: false,
-        doubleClick: false,
+        doubleClick: true,
         showAxisDragHandles: false,
+        displaylogo: false,
     });
 
 
