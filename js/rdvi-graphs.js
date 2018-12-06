@@ -5,7 +5,7 @@ if (typeof RDVI == 'undefined')
 RDVI.Chart = function Chart(selector, options){
     this.selector = selector;
     this.options = options;
-    this.last_time = new Date();
+    this.last_time = new Date(0);
     this.new_vals = {
         'x':[[]],
         'y':[[]],
@@ -97,6 +97,7 @@ RDVI.Chart.prototype.update = function(){
 
 $(function() {
    var settingAPI = "http://127.0.0.1:8080/api/settings"
+   var samplesAPI = "http://127.0.0.1:8080/api/samples?s-1"
    var results = "";
    var charts = [];
    var graphBindLocation = ["chart1","chart2","chart3","chart4","chart5"]
@@ -111,17 +112,29 @@ $(function() {
          var chart_obj = new RDVI.Chart(graphBindLocation[i], results[i]);
          charts[i] = chart_obj;
 
-         (function(chart_obj){
-            setInterval(function() {
-              chart_obj.addSample(new Date(), rand());
-              chart_obj.update();
-              console.log(chart_obj);
-            }, results[i]["refresh_rate"]*1000);
-         })(chart_obj);
 
       }
 
-      
+      setInterval(function() {
+         $.get(samplesAPI,function(data){
+            results = JSON.parse(data);
+            for (var i = 0; i < results.length; i++) {
+               var sample = results[i];
+               var time = new Date(sample.datetime*1000);
+
+               for (var j = 0; j < charts.length; j++) {
+                  var chart = charts[j];
+                  chart.addSample(time, sample[chart.options.target]);   
+               }
+            }
+
+            for(var j in charts){
+               var chart = charts[j];
+               chart.update();
+            }
+         })
+         
+      }, 1000);
 
    });
 
