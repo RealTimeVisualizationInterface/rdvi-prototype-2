@@ -88,35 +88,59 @@ RDVI.Chart.prototype.update = function(){
         }
     };
 
-    Plotly.relayout('chart1', minuteView);
-    Plotly.extendTraces('chart1', this.new_vals, [0])
+    Plotly.relayout(this.selector, minuteView);
+    Plotly.extendTraces(this.selector, this.new_vals, [0])
 
     this.new_vals = {'x':[[]],'y':[[]],};
 }
 
 
 $(function() {
+   var settingAPI = "http://127.0.0.1:8080/api/settings"
+   var results = "";
+   var charts = [];
+   var graphBindLocation = ["chart1","chart2","chart3","chart4","chart5"]
 
-    var options = {
-        name: "data1",
-        domain: 60, // sec
-        limit: [-4,4],
-        range: [-6,6],
-        refresh_rate: 1,
-    }
+   //call settings api 
+   $.get(settingAPI,function(data){
+      results = JSON.parse(data);
+      console.log(results);
+      //var options = {};
+      for (var i = 0; i < results.length; i++) {
+         console.log(results[i]);              
+         var chart_obj = new RDVI.Chart(graphBindLocation[i], results[i]);
+         charts[i] = chart_obj;
 
-    var chart1 = new RDVI.Chart('chart1', options);
+         (function(chart_obj){
+            setInterval(function() {
+              chart_obj.addSample(new Date(), rand());
+              chart_obj.update();
+              console.log(chart_obj);
+            }, results[i]["refresh_rate"]*1000);
+         })(chart_obj);
 
+      }
+
+      
+
+   });
+
+   //load into options 
+
+
+    
 
     function rand() {
         return Math.random()*5+1.5;
     }
 
+   /*{
+     name: results[i]["name"],
+     domain: results[i]["domain"], // sec
+     limit: results[i]["limit"],
+     range: [-6,6],
+     refresh_rate: results[i]["refresh_rate"],
+ }*/
 
-    var interval = setInterval(function() {
-        chart1.addSample(new Date(), rand());
-        chart1.addSample(new Date(), rand());
-        chart1.addSample(new Date(), rand());
-        chart1.update();
-    }, options.refresh_rate*1000);
+    
 });
